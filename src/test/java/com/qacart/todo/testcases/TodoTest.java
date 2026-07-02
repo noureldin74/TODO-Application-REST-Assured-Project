@@ -2,6 +2,7 @@ package com.qacart.todo.testcases;
 import com.qacart.todo.apis.TodoApi;
 import com.qacart.todo.models.ErrorMessages;
 import com.qacart.todo.models.Todo;
+import com.qacart.todo.steps.UserSteps;
 import io.restassured.http.ContentType;
 import io.restassured.response.Response;
 import org.testng.annotations.Test;
@@ -15,7 +16,7 @@ public class TodoTest {
 
 
 
-    String token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZhNDVhNzJkNmUzYmYzMDAxNTI5OTA1ZiIsImZpcnN0TmFtZSI6Ik5vdXIiLCJsYXN0TmFtZSI6IkFobWVkIiwiaWF0IjoxNzgyOTQ5NzI3fQ.wpSYV9roSFFl1pofF7BFiBy6mJtcghKpQXFlv_wsWaQ";
+    String token = UserSteps.getUserToken();
 
     @Test
     public void shouldBeAbleToCreateTodo() {
