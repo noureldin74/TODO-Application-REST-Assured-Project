@@ -94,7 +94,7 @@ public class TodoTest {
 
     @Test
     public void getTodoById() {
-        String taskId = "6a45a7716e3bf30015299062";
+        String taskId = "6a45b3dd6e3bf30015299167";
 
         given()
                 .baseUri("https://qacart-todo.herokuapp.com")
