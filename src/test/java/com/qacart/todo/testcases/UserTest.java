@@ -1,5 +1,6 @@
 package com.qacart.todo.testcases;
 
+import com.qacart.todo.models.User;
 import io.restassured.http.ContentType;
 import org.testng.annotations.Test;
 import java.util.HashMap;
@@ -13,18 +14,12 @@ public class UserTest {
 // register user test cases
     @Test
     public void shouldBeAbleToRegister() {
-
-        String body = "{\n" +
-                "  \"firstName\": \"Nour\",\n" +
-                "  \"lastName\": \"Ahmed\",\n" +
-                "  \"email\": \"testooly@example.com\",\n" +
-                "  \"password\": \"12345678\"\n" +
-                "}";
+        User user = new User("Nour", "Ahmed", "kola@example.com", "12345678");
 
         given()
                 .baseUri("https://qacart-todo.herokuapp.com")
                 .contentType(ContentType.JSON)
-                .body(body)
+                .body(user)
                 .when()
                 .post("/api/v1/users/register")
                 .then()
@@ -32,44 +27,34 @@ public class UserTest {
                 .assertThat().statusCode(201)
                 .assertThat().body("firstName", equalTo("Nour"));
 
-
     }
 
     @Test
     public void shouldNotBeAbleToRegisterWithExistingEmail() {
-        String body = "{\n" +
-                "  \"firstName\": \"Nour\",\n" +
-                "  \"lastName\": \"Ahmed\",\n" +
-                "  \"email\": \"testkola@example.com\",\n" +
-                "  \"password\": \"12345678\"\n" +
-                "}";
+        User user = new User("Nour", "Ahmed", "kola@example.com", "12345678");
 
         given()
                 .baseUri("https://qacart-todo.herokuapp.com")
                 .contentType(ContentType.JSON)
-                .body(body)
+                .body(user)
                 .when()
                 .post("/api/v1/users/register")
                 .then()
                 .log().all()
                 .assertThat().statusCode(400)
                 .assertThat().body("message", equalTo("Email is already exists in the Database"));
+
     }
 
 
     @Test
     public void registerWithInvalidPasswordLength() {
-        String body = "{\n" +
-                "  \"firstName\": \"Nour\",\n" +
-                "  \"lastName\": \"Ahmed\",\n" +
-                "  \"email\": \"testkola@example.com\",\n" +
-                "  \"password\": \"123456\"\n" +
-                "}";
+        User user = new User("Nour", "Ahmed", "kola@example.com", "123456");
 
         given()
                 .baseUri("https://qacart-todo.herokuapp.com")
                 .contentType(ContentType.JSON)
-                .body(body)
+                .body(user)
                 .when()
                 .post("/api/v1/users/register")
                 .then()
@@ -80,17 +65,12 @@ public class UserTest {
 
     @Test
     public void shouldNotBeAbleToRegisterWithEmptyEmail() {
-        String body = "{\n" +
-                "  \"firstName\": \"Nour\",\n" +
-                "  \"lastName\": \"Ahmed\",\n" +
-                "  \"email\": \"\",\n" +
-                "  \"password\": \"12345678\"\n" +
-                "}";
+        User user = new User("Nour", "Ahmed", "", "12345678");
 
         given()
                 .baseUri("https://qacart-todo.herokuapp.com")
                 .contentType(ContentType.JSON)
-                .body(body)
+                .body(user)
                 .when()
                 .post("/api/v1/users/register")
                 .then()
@@ -101,17 +81,11 @@ public class UserTest {
 
     @Test
     public void shouldNotBeAbleToRegisterWithEmptyPassword() {
-        String body = "{\n" +
-                "  \"firstName\": \"Nour\",\n" +
-                "  \"lastName\": \"Ahmed\",\n" +
-                "  \"email\": \"testkola@example.com\",\n" +
-                "  \"password\": \"\"\n" +
-                "}";
-
+        User user = new User("Nour", "Ahmed", "kola@example.com", "");
         given()
                 .baseUri("https://qacart-todo.herokuapp.com")
                 .contentType(ContentType.JSON)
-                .body(body)
+                .body(user)
                 .when()
                 .post("/api/v1/users/register")
                 .then()
@@ -121,22 +95,15 @@ public class UserTest {
     }
 
 
-
-
     // login user test cases
 
     @Test
      public void LoginWithValidCredentials () {
-
-            String body = "{\n" +
-                    "  \"email\": \"testooly@example.com\",\n" +
-                    "  \"password\": \"12345678\"\n" +
-                    "}";
-
+        User user = new User("kola@example.com", "12345678");
             given()
                     .baseUri("https://qacart-todo.herokuapp.com")
                     .contentType(ContentType.JSON)
-                    .body(body)
+                    .body(user)
                     .when()
                     .post("/api/v1/users/login")
                     .then()
@@ -152,16 +119,12 @@ public class UserTest {
 
      @Test
      public void LoginWithInvalidCredentials () {
-
-            String body = "{\n" +
-                    "  \"email\": \"testooly@example.com\",\n" +
-                    "  \"password\": \"wrongpassword\"\n" +
-                    "}";
+         User user = new User("kola@example.com", "wrongpassword");
 
             given()
                     .baseUri("https://qacart-todo.herokuapp.com")
                     .contentType(ContentType.JSON)
-                    .body(body)
+                    .body(user)
                     .when()
                     .post("/api/v1/users/login")
                     .then()
