@@ -1,4 +1,5 @@
 package com.qacart.todo.testcases;
+import com.qacart.todo.models.Todo;
 import io.restassured.http.ContentType;
 import org.testng.annotations.Test;
 
@@ -9,21 +10,19 @@ import static org.hamcrest.Matchers.not;
 public class TodoTest {
 
 
-    private final String token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZhNDVhNzJkNmUzYmYzMDAxNTI5OTA1ZiIsImZpcnN0TmFtZSI6Ik5vdXIiLCJsYXN0TmFtZSI6IkFobWVkIiwiaWF0IjoxNzgyOTQ5NzI3fQ.wpSYV9roSFFl1pofF7BFiBy6mJtcghKpQXFlv_wsWaQ";
+
+    String token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZhNDVhNzJkNmUzYmYzMDAxNTI5OTA1ZiIsImZpcnN0TmFtZSI6Ik5vdXIiLCJsYXN0TmFtZSI6IkFobWVkIiwiaWF0IjoxNzgyOTQ5NzI3fQ.wpSYV9roSFFl1pofF7BFiBy6mJtcghKpQXFlv_wsWaQ";
 
     @Test
     public void shouldBeAbleToCreateTodo() {
-        String body = "{\n" +
-                "  \"isCompleted\": \"false\",\n" +
-                "  \"item\": \"Learn Appium\"\n" +
-                "}";
 
+        Todo todo = new Todo(false, "Learn Appium");
         given()
                 .baseUri("https://qacart-todo.herokuapp.com")
                 .auth()
                 .oauth2(token)
                 .contentType(ContentType.JSON)
-                .body(body)
+                .body(todo)
                 .when()
                 .post("/api/v1/tasks")
                 .then()
@@ -35,15 +34,12 @@ public class TodoTest {
 
     @Test
     public void shouldNotBeAbleToCreateTodoWithoutAuth() {
-        String body = "{\n" +
-                "  \"isCompleted\": \"false\",\n" +
-                "  \"item\": \"Learn Appium\"\n" +
-                "}";
+        Todo todo = new Todo(false, "Learn Appium");
 
         given()
                 .baseUri("https://qacart-todo.herokuapp.com")
                 .contentType(ContentType.JSON)
-                .body(body)
+                .body(todo)
                 .when()
                 .post("/api/v1/tasks")
                 .then()
@@ -54,16 +50,14 @@ public class TodoTest {
 
     @Test
     public void shouldNotBeAbleToCreateTodoWithoutItem() {
-        String body = "{\n" +
-                "  \"isCompleted\": \"false\"\n" +
-                "}";
+        Todo todo = new Todo(false, null);
 
         given()
                 .baseUri("https://qacart-todo.herokuapp.com")
                 .auth()
                 .oauth2(token)
                 .contentType(ContentType.JSON)
-                .body(body)
+                .body(todo)
                 .when()
                 .post("/api/v1/tasks")
                 .then()
@@ -74,16 +68,14 @@ public class TodoTest {
 
     @Test
     public void shouldnotbeabletocreatetodowithoutiscompleted() {
-        String body = "{\n" +
-                "  \"item\": \"Learn Appium\"\n" +
-                "}";
+        Todo todo = new Todo(null, "Learn Appium");
 
         given()
                 .baseUri("https://qacart-todo.herokuapp.com")
                 .auth()
                 .oauth2(token)
                 .contentType(ContentType.JSON)
-                .body(body)
+                .body(todo)
                 .when()
                 .post("/api/v1/tasks")
                 .then()

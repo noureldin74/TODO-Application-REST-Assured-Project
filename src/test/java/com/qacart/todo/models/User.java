@@ -1,12 +1,12 @@
 package com.qacart.todo.models;
-
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-
 @JsonInclude(JsonInclude.Include.NON_NULL)  //not include null values in the json serialization
+
 public class User {
 
+//     fields
     private String firstName;
     private String lastName;
     private String email;
@@ -15,7 +15,7 @@ public class User {
     private String accessToken;
     private String userID;
 
-
+//     constructor
     public User() {
     }
 
@@ -33,7 +33,7 @@ public class User {
 
 
 
-
+//     setters and getters
     public String getFirstName() {
         return firstName;
     }
