@@ -1,9 +1,11 @@
 package com.qacart.todo.testcases;
 import com.qacart.todo.models.Todo;
 import io.restassured.http.ContentType;
+import io.restassured.response.Response;
 import org.testng.annotations.Test;
 
 import static io.restassured.RestAssured.given;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.not;
 
@@ -17,7 +19,7 @@ public class TodoTest {
     public void shouldBeAbleToCreateTodo() {
 
         Todo todo = new Todo(false, "Learn Appium");
-        given()
+        Response response = given()
                 .baseUri("https://qacart-todo.herokuapp.com")
                 .auth()
                 .oauth2(token)
@@ -27,32 +29,33 @@ public class TodoTest {
                 .post("/api/v1/tasks")
                 .then()
                 .log().all()
-                .assertThat().statusCode(201)
-                .assertThat().body("isCompleted", equalTo(false))
-                .assertThat().body("item", equalTo("Learn Appium"));
+                .extract().response();
+        assertThat(response.statusCode(), equalTo(201));
+        assertThat(response.path("isCompleted"), equalTo(false));
+        assertThat(response.path("item"), equalTo("Learn Appium"));
     }
 
     @Test
     public void shouldNotBeAbleToCreateTodoWithoutAuth() {
         Todo todo = new Todo(false, "Learn Appium");
 
-        given()
+        Response response = given()
                 .baseUri("https://qacart-todo.herokuapp.com")
                 .contentType(ContentType.JSON)
                 .body(todo)
                 .when()
                 .post("/api/v1/tasks")
                 .then()
-                .log().all()
-                .assertThat().statusCode(401)
-                .assertThat().body("message", equalTo("Unauthorized, please insert a correct token"));
+                .log().all().extract().response();
+        assertThat(response.statusCode(), equalTo(401));
+        assertThat(response.path("message"), equalTo("Unauthorized, please insert a correct token"));
     }
 
     @Test
     public void shouldNotBeAbleToCreateTodoWithoutItem() {
         Todo todo = new Todo(false, null);
 
-        given()
+        Response response = given()
                 .baseUri("https://qacart-todo.herokuapp.com")
                 .auth()
                 .oauth2(token)
@@ -62,15 +65,16 @@ public class TodoTest {
                 .post("/api/v1/tasks")
                 .then()
                 .log().all()
-                .assertThat().statusCode(400)
-                .assertThat().body("message", equalTo("\"item\" is required"));
+                .extract().response();
+        assertThat(response.statusCode(), equalTo(400));
+        assertThat(response.path("message"), equalTo("\"item\" is required"));
     }
 
     @Test
     public void shouldnotbeabletocreatetodowithoutiscompleted() {
         Todo todo = new Todo(null, "Learn Appium");
 
-        given()
+        Response response = given()
                 .baseUri("https://qacart-todo.herokuapp.com")
                 .auth()
                 .oauth2(token)
@@ -80,15 +84,16 @@ public class TodoTest {
                 .post("/api/v1/tasks")
                 .then()
                 .log().all()
-                .assertThat().statusCode(400)
-                .assertThat().body("message", equalTo("\"isCompleted\" is required"));
+                .extract().response();
+        assertThat(response.statusCode(), equalTo(400));
+        assertThat(response.path("message"), equalTo("\"isCompleted\" is required"));
     }
 
     @Test
     public void getTodoById() {
         String taskId = "6a45b3dd6e3bf30015299167";
 
-        given()
+        Response response = given()
                 .baseUri("https://qacart-todo.herokuapp.com")
                 .auth()
                 .oauth2(token)
@@ -96,15 +101,15 @@ public class TodoTest {
                 .get("/api/v1/tasks/" +taskId)
                 .then()
                 .log().all()
-                .assertThat().statusCode(200)
-                .assertThat().body("_id", equalTo(taskId));
-
+                .extract().response();
+        assertThat(response.statusCode(), equalTo(200));
+        assertThat(response.path("_id"), equalTo(taskId));
 
     }
 
     @Test
     public void getAllTodos() {
-        given()
+        Response response = given()
                 .baseUri("https://qacart-todo.herokuapp.com")
                 .auth()
                 .oauth2(token)
@@ -112,14 +117,15 @@ public class TodoTest {
                 .get("/api/v1/tasks")
                 .then()
                 .log().all()
-                .assertThat().statusCode(200);
+                .extract().response();
+        assertThat(response.statusCode(), equalTo(200));
     }
 
     @Test
     public void deleteTodoById() {
-        String taskId = "6a45a7a46e3bf30015299065";
+        String taskId = "6a46a3b66e3bf30015299fe1";
 
-        given()
+        Response response = given()
                 .baseUri("https://qacart-todo.herokuapp.com")
                 .auth()
                 .oauth2(token)
@@ -127,7 +133,8 @@ public class TodoTest {
                 .delete("/api/v1/tasks/" +taskId)
                 .then()
                 .log().all()
-                .assertThat().statusCode(200);
+                .extract().response();
+        assertThat(response.statusCode(), equalTo(200));
     }
 
 }
