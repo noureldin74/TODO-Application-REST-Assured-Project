@@ -3,6 +3,7 @@ package com.qacart.todo.testcases;
 import com.qacart.todo.apis.UserApi;
 import com.qacart.todo.models.ErrorMessages;
 import com.qacart.todo.models.User;
+import com.qacart.todo.steps.UserSteps;
 import io.restassured.http.ContentType;
 import io.restassured.response.Response;
 import org.testng.annotations.Test;
@@ -18,7 +19,7 @@ public class UserTest {
 // register user test cases
     @Test
     public void shouldBeAbleToRegister() {
-        User user = new User("Nour", "Ahmed", "kola44464589@example.com", "12345678");
+        User user = UserSteps.generateUser();
         Response response = UserApi.register(user);
         User registeredUser = response.body().as(User.class);
         assertThat(response.statusCode(), equalTo(201));
@@ -26,7 +27,7 @@ public class UserTest {
     }
     @Test
     public void shouldNotBeAbleToRegisterWithExistingEmail() {
-        User user = new User("Nour", "Ahmed", "kola@example.com", "12345678");
+        User user = UserSteps.getregisteredUser();
         Response response = UserApi.register(user);
         ErrorMessages errorMessages = response.body().as(ErrorMessages.class);
         assertThat(response.statusCode(), equalTo(400));
@@ -37,7 +38,8 @@ public class UserTest {
 
     @Test
     public void registerWithInvalidPasswordLength() {
-        User user = new User("Nour", "Ahmed", "kola@example.com", "123456");
+        User user = UserSteps.generateUser();
+        user.setPassword("123"); // Set a short password
 
         Response response=UserApi.register(user);
         ErrorMessages errorMessages = response.body().as(ErrorMessages.class);
@@ -47,7 +49,9 @@ public class UserTest {
 
     @Test
     public void shouldNotBeAbleToRegisterWithEmptyEmail() {
-        User user = new User("Nour", "Ahmed", "", "12345678");
+        User user = UserSteps.generateUser();
+        user.setEmail(""); // Set an empty email
+
         Response response = UserApi.register(user);
         ErrorMessages errorMessages = response.body().as(ErrorMessages.class);
         assertThat(response.statusCode(), equalTo(400));
@@ -56,7 +60,8 @@ public class UserTest {
 
     @Test
     public void shouldNotBeAbleToRegisterWithEmptyPassword() {
-        User user = new User("Nour", "Ahmed", "kola@example.com", "");
+        User user = UserSteps.generateUser();
+        user.setPassword(""); // Set an empty password
         Response response=UserApi.register(user);
         ErrorMessages errorMessages = response.body().as(ErrorMessages.class);
         assertThat(response.statusCode(), equalTo(400));
@@ -68,11 +73,14 @@ public class UserTest {
 
     @Test
      public void LoginWithValidCredentials () {
-        User user = new User("kola@example.com", "12345678");
-        Response response = UserApi.login(user);
+
+        User user = UserSteps.getregisteredUser();
+        User logindata = new User(user.getEmail(), user.getPassword());
+
+        Response response = UserApi.login(logindata);
         User registeredUser = response.body().as(User.class);
         assertThat(response.statusCode(), equalTo(200));
-        assertThat(registeredUser.getFirstName(), equalTo("Nour"));
+        assertThat(registeredUser.getFirstName(), equalTo(user.getFirstName()));
         assertThat(registeredUser.getAccessToken(), not(equalTo(null)));
 
 
@@ -82,8 +90,9 @@ public class UserTest {
 
      @Test
      public void LoginWithInvalidCredentials () {
-        User user = new User("kola@example.com", "wrongpassword");
-        Response response = UserApi.login(user);
+        User user = UserSteps.getregisteredUser();
+        User logindata = new User(user.getEmail(), "wrongpassword");
+        Response response = UserApi.login(logindata);
         ErrorMessages errorMessages = response.body().as(ErrorMessages.class);
         assertThat(response.statusCode(), equalTo(401));
         assertThat(errorMessages.getMessage(), equalTo("The email and password combination is not correct, please fill a correct email and password"));
