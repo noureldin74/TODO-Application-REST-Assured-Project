@@ -1,5 +1,6 @@
 package com.qacart.todo.testcases;
 
+import com.qacart.todo.models.ErrorMessages;
 import com.qacart.todo.models.User;
 import io.restassured.http.ContentType;
 import io.restassured.response.Response;
@@ -16,7 +17,7 @@ public class UserTest {
 // register user test cases
     @Test
     public void shouldBeAbleToRegister() {
-        User user = new User("Nour", "Ahmed", "kola@example.com", "12345678");
+        User user = new User("Nour", "Ahmed", "kola44589@example.com", "12345678");
 
         Response response= given()
                 .baseUri("https://qacart-todo.herokuapp.com")
@@ -27,8 +28,10 @@ public class UserTest {
                 .then()
                 .log().all()
                 .extract().response();
+
+        User registeredUser = response.body().as(User.class);
         assertThat(response.statusCode(), equalTo(201));
-        assertThat(response.path("firstName"), equalTo("Nour"));
+        assertThat(registeredUser.getFirstName(), equalTo(user.getFirstName()));
     }
 
     @Test
@@ -44,9 +47,9 @@ public class UserTest {
                 .then()
                 .log().all()
                 .extract().response();
-
+        ErrorMessages errorMessages = response.body().as(ErrorMessages.class);
         assertThat(response.statusCode(), equalTo(400));
-        assertThat(response.path("message"), equalTo("Email is already exists in the Database"));
+        assertThat(errorMessages.getMessage(), equalTo("Email is already exists in the Database"));
 
     }
 
@@ -65,8 +68,9 @@ public class UserTest {
                 .log().all()
                 .extract().response();
 
+        ErrorMessages errorMessages = response.body().as(ErrorMessages.class);
         assertThat(response.statusCode(), equalTo(400));
-        assertThat(response.path("message"), equalTo("\"password\" length must be at least 8 characters long"));
+        assertThat(errorMessages.getMessage(), equalTo("\"password\" length must be at least 8 characters long"));
     }
 
     @Test
@@ -83,8 +87,9 @@ public class UserTest {
                 .log().all()
                 .extract().response();
 
+        ErrorMessages errorMessages = response.body().as(ErrorMessages.class);
         assertThat(response.statusCode(), equalTo(400));
-        assertThat(response.path("message"), equalTo("\"email\" is not allowed to be empty"));
+        assertThat(errorMessages.getMessage(), equalTo("\"email\" is not allowed to be empty"));
     }
 
     @Test
@@ -100,8 +105,9 @@ public class UserTest {
                 .log().all()
                 .extract().response();
 
+        ErrorMessages errorMessages = response.body().as(ErrorMessages.class);
         assertThat(response.statusCode(), equalTo(400));
-        assertThat(response.path("message"), equalTo("\"password\" is not allowed to be empty"));
+        assertThat(errorMessages.getMessage(), equalTo("\"password\" is not allowed to be empty"));
     }
 
 
@@ -120,9 +126,10 @@ public class UserTest {
                     .log().all()
                     .extract().response();
 
+        User registeredUser = response.body().as(User.class);
         assertThat(response.statusCode(), equalTo(200));
-        assertThat(response.path("firstName"), equalTo("Nour"));
-        assertThat(response.path("access_token"), not(equalTo(null)));
+        assertThat(registeredUser.getFirstName(), equalTo("Nour"));
+        assertThat(registeredUser.getAccessToken(), not(equalTo(null)));
 
 
 
@@ -142,9 +149,9 @@ public class UserTest {
                     .then()
                     .log().all()
                     .extract().response();
-
+        ErrorMessages errorMessages = response.body().as(ErrorMessages.class);
         assertThat(response.statusCode(), equalTo(401));
-        assertThat(response.path("message"), equalTo("The email and password combination is not correct, please fill a correct email and password"));
+        assertThat(errorMessages.getMessage(), equalTo("The email and password combination is not correct, please fill a correct email and password"));
 
 
         }

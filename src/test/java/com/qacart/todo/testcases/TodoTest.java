@@ -1,4 +1,5 @@
 package com.qacart.todo.testcases;
+import com.qacart.todo.models.ErrorMessages;
 import com.qacart.todo.models.Todo;
 import io.restassured.http.ContentType;
 import io.restassured.response.Response;
@@ -30,9 +31,10 @@ public class TodoTest {
                 .then()
                 .log().all()
                 .extract().response();
+        Todo createdTodo = response.body().as(Todo.class);
         assertThat(response.statusCode(), equalTo(201));
-        assertThat(response.path("isCompleted"), equalTo(false));
-        assertThat(response.path("item"), equalTo("Learn Appium"));
+        assertThat(createdTodo.getCompleted(), equalTo(todo.getCompleted()));
+        assertThat(createdTodo.getItem(), equalTo(todo.getItem()));
     }
 
     @Test
@@ -47,8 +49,9 @@ public class TodoTest {
                 .post("/api/v1/tasks")
                 .then()
                 .log().all().extract().response();
+        ErrorMessages errorMessages = response.body().as(ErrorMessages.class);
         assertThat(response.statusCode(), equalTo(401));
-        assertThat(response.path("message"), equalTo("Unauthorized, please insert a correct token"));
+        assertThat(errorMessages.getMessage(), equalTo("Unauthorized, please insert a correct token"));
     }
 
     @Test
@@ -66,8 +69,9 @@ public class TodoTest {
                 .then()
                 .log().all()
                 .extract().response();
+        ErrorMessages errorMessages = response.body().as(ErrorMessages.class);
         assertThat(response.statusCode(), equalTo(400));
-        assertThat(response.path("message"), equalTo("\"item\" is required"));
+        assertThat(errorMessages.getMessage(), equalTo("\"item\" is required"));
     }
 
     @Test
@@ -85,8 +89,10 @@ public class TodoTest {
                 .then()
                 .log().all()
                 .extract().response();
+        ErrorMessages errorMessages = response.body().as(ErrorMessages.class);
+
         assertThat(response.statusCode(), equalTo(400));
-        assertThat(response.path("message"), equalTo("\"isCompleted\" is required"));
+        assertThat(errorMessages.getMessage(), equalTo("\"isCompleted\" is required"));
     }
 
     @Test
@@ -102,8 +108,9 @@ public class TodoTest {
                 .then()
                 .log().all()
                 .extract().response();
+        Todo todo = response.body().as(Todo.class);
         assertThat(response.statusCode(), equalTo(200));
-        assertThat(response.path("_id"), equalTo(taskId));
+        assertThat(todo.getId(), equalTo(taskId));
 
     }
 
