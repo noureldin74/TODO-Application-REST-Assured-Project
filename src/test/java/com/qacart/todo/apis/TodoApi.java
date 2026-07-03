@@ -1,5 +1,6 @@
 package com.qacart.todo.apis;
 
+import com.qacart.todo.data.Route;
 import com.qacart.todo.models.Todo;
 import io.restassured.http.ContentType;
 import io.restassured.response.Response;
@@ -11,13 +12,13 @@ public class TodoApi {
     public static Response addTodo(Todo todo , String token) {
 
          return  given()
-                .baseUri("https://qacart-todo.herokuapp.com")
+                .baseUri(Route.BASE_URI)
                 .auth()
                 .oauth2(token)
                 .contentType(ContentType.JSON)
                 .body(todo)
                 .when()
-                .post("/api/v1/tasks")
+                .post(Route.ADD_TODO)
                 .then()
                 .log().all()
                 .extract().response();
@@ -27,11 +28,11 @@ public class TodoApi {
     public static Response getTodoById(String taskId , String token) {
 
         return  given()
-                .baseUri("https://qacart-todo.herokuapp.com")
+                .baseUri(Route.BASE_URI)
                 .auth()
                 .oauth2(token)
                 .when()
-                .get("/api/v1/tasks/" +taskId)
+                .get(Route.GET_TODO_BY_ID.replace("{taskId}", taskId))
                 .then()
                 .log().all()
                 .extract().response();
@@ -40,11 +41,11 @@ public class TodoApi {
     public static Response getAllTodos(String token) {
 
         return  given()
-                .baseUri("https://qacart-todo.herokuapp.com")
+                .baseUri(Route.BASE_URI)
                 .auth()
                 .oauth2(token)
                 .when()
-                .get("/api/v1/tasks")
+                .get(Route.GET_ALL_TODOS)
                 .then()
                 .log().all()
                 .extract().response();
@@ -53,11 +54,11 @@ public class TodoApi {
     public static Response deleteTodoById(String taskId , String token) {
 
         return  given()
-                .baseUri("https://qacart-todo.herokuapp.com")
+                .baseUri(Route.BASE_URI)
                 .auth()
                 .oauth2(token)
                 .when()
-                .delete("/api/v1/tasks/" +taskId)
+                .delete(Route.DELETE_TODO_BY_ID.replace("{taskId}", taskId))
                 .then()
                 .log().all()
                 .extract().response();
