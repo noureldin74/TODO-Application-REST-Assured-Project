@@ -2,6 +2,7 @@ package com.qacart.todo.testcases;
 import com.qacart.todo.apis.TodoApi;
 import com.qacart.todo.models.ErrorMessages;
 import com.qacart.todo.models.Todo;
+import com.qacart.todo.steps.TodoSteps;
 import com.qacart.todo.steps.UserSteps;
 import io.restassured.http.ContentType;
 import io.restassured.response.Response;
@@ -21,7 +22,7 @@ public class TodoTest {
     @Test
     public void shouldBeAbleToCreateTodo() {
 
-        Todo todo = new Todo(false, "Learn Appium");
+        Todo todo = TodoSteps.generateTodo();
         Response response = TodoApi.addTodo(todo, token);
         Todo createdTodo = response.body().as(Todo.class);
         assertThat(response.statusCode(), equalTo(201));
@@ -31,7 +32,7 @@ public class TodoTest {
 
     @Test
     public void shouldNotBeAbleToCreateTodoWithoutAuth() {
-        Todo todo = new Todo(false, "Learn Appium");
+        Todo todo = TodoSteps.generateTodo();
         Response response = TodoApi.addTodo(todo, "");
         ErrorMessages errorMessages = response.body().as(ErrorMessages.class);
         assertThat(response.statusCode(), equalTo(401));
@@ -40,7 +41,8 @@ public class TodoTest {
 
     @Test
     public void shouldNotBeAbleToCreateTodoWithoutItem() {
-        Todo todo = new Todo(false, null);
+        Todo todo = TodoSteps.generateTodo();
+        todo.setItem(null);
         Response response = TodoApi.addTodo(todo, token);
         ErrorMessages errorMessages = response.body().as(ErrorMessages.class);
         assertThat(response.statusCode(), equalTo(400));
@@ -49,7 +51,8 @@ public class TodoTest {
 
     @Test
     public void shouldnotbeabletocreatetodowithoutiscompleted() {
-        Todo todo = new Todo(null, "Learn Appium");
+        Todo todo = TodoSteps.generateTodo();
+        todo.setCompleted(null);
         Response response = TodoApi.addTodo(todo, token);
         ErrorMessages errorMessages = response.body().as(ErrorMessages.class);
         assertThat(response.statusCode(), equalTo(400));
@@ -59,12 +62,12 @@ public class TodoTest {
 
     @Test
     public void getTodoById() {
-        String taskId = "6a46cf016e3bf3001529a2a3";
-        Response response = TodoApi.getTodoById(taskId, token);
+        String todoId = TodoSteps.getTodoById(token);
+        Response response = TodoApi.getTodoById(todoId, token);
 
         Todo todo = response.body().as(Todo.class);
         assertThat(response.statusCode(), equalTo(200));
-        assertThat(todo.getId(), equalTo(taskId));
+        assertThat(todo.getId(), equalTo(todoId));
 
     }
 
@@ -76,9 +79,8 @@ public class TodoTest {
 
     @Test
     public void deleteTodoById() {
-        String taskId = "6a46cf016e3bf3001529a2a3";
-
-        Response response = TodoApi.deleteTodoById(taskId, token);
+        String todoId = TodoSteps.getTodoById(token);
+        Response response = TodoApi.deleteTodoById(todoId, token);
         assertThat(response.statusCode(), equalTo(200));
     }
 

@@ -23,6 +23,7 @@ public class UserSteps {
         UserApi.register(user);
         return user;
     }
+
     public static String getUserToken(){
         User user = generateUser();
         Response response = UserApi.register(user);
