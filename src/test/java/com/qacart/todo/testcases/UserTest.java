@@ -1,14 +1,11 @@
 package com.qacart.todo.testcases;
-
 import com.qacart.todo.apis.UserApi;
+import com.qacart.todo.data.Errors;
 import com.qacart.todo.models.ErrorMessages;
 import com.qacart.todo.models.User;
 import com.qacart.todo.steps.UserSteps;
-import io.restassured.http.ContentType;
 import io.restassured.response.Response;
 import org.testng.annotations.Test;
-import java.util.HashMap;
-import static io.restassured.RestAssured.given;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.not;
@@ -31,7 +28,7 @@ public class UserTest {
         Response response = UserApi.register(user);
         ErrorMessages errorMessages = response.body().as(ErrorMessages.class);
         assertThat(response.statusCode(), equalTo(400));
-        assertThat(errorMessages.getMessage(), equalTo("Email is already exists in the Database"));
+        assertThat(errorMessages.getMessage(), equalTo(Errors.ExistingEmail));
 
     }
 
@@ -44,7 +41,7 @@ public class UserTest {
         Response response=UserApi.register(user);
         ErrorMessages errorMessages = response.body().as(ErrorMessages.class);
         assertThat(response.statusCode(), equalTo(400));
-        assertThat(errorMessages.getMessage(), equalTo("\"password\" length must be at least 8 characters long"));
+        assertThat(errorMessages.getMessage(), equalTo(Errors.PASSWORD_LENGTH));
     }
 
     @Test
@@ -55,7 +52,7 @@ public class UserTest {
         Response response = UserApi.register(user);
         ErrorMessages errorMessages = response.body().as(ErrorMessages.class);
         assertThat(response.statusCode(), equalTo(400));
-        assertThat(errorMessages.getMessage(), equalTo("\"email\" is not allowed to be empty"));
+        assertThat(errorMessages.getMessage(), equalTo(Errors.EMPTY_EMAIL));
     }
 
     @Test
@@ -65,7 +62,7 @@ public class UserTest {
         Response response=UserApi.register(user);
         ErrorMessages errorMessages = response.body().as(ErrorMessages.class);
         assertThat(response.statusCode(), equalTo(400));
-        assertThat(errorMessages.getMessage(), equalTo("\"password\" is not allowed to be empty"));
+        assertThat(errorMessages.getMessage(), equalTo(Errors.EMPTY_PASSWORD));
     }
 
 
@@ -95,7 +92,7 @@ public class UserTest {
         Response response = UserApi.login(logindata);
         ErrorMessages errorMessages = response.body().as(ErrorMessages.class);
         assertThat(response.statusCode(), equalTo(401));
-        assertThat(errorMessages.getMessage(), equalTo("The email and password combination is not correct, please fill a correct email and password"));
+        assertThat(errorMessages.getMessage(), equalTo(Errors.UNAUTHORIZED));
 
 
         }

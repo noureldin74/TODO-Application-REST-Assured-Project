@@ -1,17 +1,14 @@
 package com.qacart.todo.testcases;
 import com.qacart.todo.apis.TodoApi;
+import com.qacart.todo.data.Errors;
 import com.qacart.todo.models.ErrorMessages;
 import com.qacart.todo.models.Todo;
 import com.qacart.todo.steps.TodoSteps;
 import com.qacart.todo.steps.UserSteps;
-import io.restassured.http.ContentType;
 import io.restassured.response.Response;
 import org.testng.annotations.Test;
-
-import static io.restassured.RestAssured.given;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.not;
 
 public class TodoTest {
 
@@ -36,7 +33,7 @@ public class TodoTest {
         Response response = TodoApi.addTodo(todo, "");
         ErrorMessages errorMessages = response.body().as(ErrorMessages.class);
         assertThat(response.statusCode(), equalTo(401));
-        assertThat(errorMessages.getMessage(), equalTo("Unauthorized, please insert a correct token"));
+        assertThat(errorMessages.getMessage(), equalTo(Errors.MISSING_TOKEN));
     }
 
     @Test
@@ -46,7 +43,7 @@ public class TodoTest {
         Response response = TodoApi.addTodo(todo, token);
         ErrorMessages errorMessages = response.body().as(ErrorMessages.class);
         assertThat(response.statusCode(), equalTo(400));
-        assertThat(errorMessages.getMessage(), equalTo("\"item\" is required"));
+        assertThat(errorMessages.getMessage(), equalTo(Errors.EMPTY_ITEM));
     }
 
     @Test
@@ -56,7 +53,7 @@ public class TodoTest {
         Response response = TodoApi.addTodo(todo, token);
         ErrorMessages errorMessages = response.body().as(ErrorMessages.class);
         assertThat(response.statusCode(), equalTo(400));
-        assertThat(errorMessages.getMessage(), equalTo("\"isCompleted\" is required"));
+        assertThat(errorMessages.getMessage(), equalTo(Errors.EMPTY_COMPLETED));
     }
 
 
